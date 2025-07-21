@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Mental Health & Sleep Support Agent</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #4a5568;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .welcome-section {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            display: block;
+        }
+
+        .welcome-section input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+        }
+
+        .welcome-section button {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .welcome-section button:hover {
+            transform: scale(1.05);
+        }
+
+        .main-interface {
+            display: none;
+        }
+
+        .command-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .command-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 20px;
+            border-radius: 15px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            text-align: center;
+        }
+
+        .command-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .command-btn h3 {
+            margin-bottom: 8px;
+            font-size: 1.2em;
+        }
+
+        .command-btn p {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .response-area {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            min-height: 200px;
+            white-space: pre-wrap;
+            font-size: 1.1em;
+            line-height: 1.6;
+            display: none;
+        }
+
+        .input-forms {
+            display: none;
+            background: #f0f4f8;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .input-forms h3 {
+            margin-bottom: 15px;
+            color: #4a5568;
+        }
+
+        .input-forms input, .input-forms textarea, .input-forms select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1em;
+            margin-bottom: 10px;
+        }
+
+        .input-forms button {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-size: 1em;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        .input-forms .cancel-btn {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            font-style: italic;
+            color: #667eea;
+        }
+
+        .loading::after {
+            content: '●●●';
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0%, 60% { opacity: 0; }
+            30% { opacity: 1; }
+        }
+
+        .chat-mode {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 25px;
+            font-size: 1em;
+        }
+
+        .chat-input button {
+            padding: 12px 20px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+        }
+
+        .back-btn {
+            background: #e2e8f0;
+            color: #4a5568;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌟 AI Mental Health & Sleep Support Agent 🌟</h1>
+            <p>Your personal companion for mental wellbeing and sleep support</p>
+        </div>
+
+        <!-- Welcome Section -->
+        <div class="welcome-section" id="welcomeSection">
+            <h2>Welcome! What's your name?</h2>
+            <input type="text" id="userName" placeholder="Enter your name..." />
+            <button onclick="startSession()">Start Session</button>
+        </div>
+
+        <!-- Main Interface -->
+        <div class="main-interface" id="mainInterface">
+            <div class="command-buttons">
+                <button class="command-btn" onclick="showCommand('checkin')">
+                    <h3>🔍 Daily Check-in</h3>
+                    <p>How are you feeling today?</p>
+                </button>
+                <button class="command-btn" onclick="showCommand('stress')">
+                    <h3>😰 Stress Management</h3>
+                    <p>Get personalized stress relief</p>
+                </button>
+                <button class="command-btn" onclick="showCommand('bedtime')">
+                    <h3>🌙 Bedtime Support</h3>
+                    <p>Peaceful sleep guidance</p>
+                </button>
+                <button class="command-btn" onclick="showCommand('mood')">
+                    <h3>💝 Mood Tracking</h3>
+                    <p>Track your emotional state</p>
+                </button>
+                <button class="command-btn" onclick="showCommand('affirmations')">
+                    <h3>✨ Positive Affirmations</h3>
+                    <p>Boost your confidence</p>
+                </button>
+                <button class="command-btn" onclick="showCommand('emergency')">
+                    <h3>🚨 Emergency Support</h3>
+                    <p>Immediate crisis help</p>
+                </button>
+            </div>
+
+            <!-- Chat Mode -->
+            <div class="chat-mode" id="chatMode">
+                <h3>💬 Chat with your AI Assistant</h3>
+                <div class="chat-input">
+                    <input type="text" id="chatInput" placeholder="Type your message..." />
+                    <button onclick="sendChatMessage()">Send</button>
+                </div>
+            </div>
+
+            <!-- Response Area -->
+            <div class="response-area" id="responseArea"></div>
+            
+            <!-- Loading Indicator -->
+            <div class="loading" id="loading">AI is thinking</div>
+
+            <!-- Back Button -->
+            <button class="back-btn" id="backBtn" onclick="showMainMenu()" style="display: none;">← Back to Menu</button>
+        </div>
+
+        <!-- Input Forms -->
+        <div class="input-forms" id="stressForm">
+            <h3>Stress Management Support</h3>
+            <label>Rate your stress level (1-10):</label>
+            <input type="number" id="stressLevel" min="1" max="10" value="5" />
+            <label>What's causing you stress? (optional):</label>
+            <textarea id="stressConcern" placeholder="Describe your specific concern..."></textarea>
+            <button onclick="submitStress()">Get Help</button>
+            <button class="cancel-btn" onclick="hideInputForms()">Cancel</button>
+        </div>
+
+        <div class="input-forms" id="bedtimeForm">
+            <h3>Bedtime Support</h3>
+            <label>Any specific sleep concerns? (optional):</label>
+            <textarea id="sleepConcerns" placeholder="Trouble falling asleep, staying asleep, etc..."></textarea>
+            <button onclick="submitBedtime()">Get Sleep Help</button>
+            <button class="cancel-btn" onclick="hideInputForms()">Cancel</button>
+        </div>
+
+        <div class="input-forms" id="moodForm">
+            <h3>Mood Tracking</h3>
+            <label>Rate your current mood (1-10):</label>
+            <input type="number" id="moodRating" min="1" max="10" value="5" />
+            <label>Describe how you're feeling (optional):</label>
+            <textarea id="moodDescription" placeholder="What's on your mind?"></textarea>
+            <button onclick="submitMood()">Track Mood</button>
+            <button class="cancel-btn" onclick="hideInputForms()">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = '';
+
+        function startSession() {
+            currentUser = document.getElementById('userName').value.trim();
+            if (!currentUser) {
+                alert('Please enter your name to continue');
+                return;
+            }
+            
+            document.getElementById('welcomeSection').style.display = 'none';
+            document.getElementById('mainInterface').style.display = 'block';
+            document.getElementById('chatMode').style.display = 'block';
+            
+            // Show welcome message
+            showResponse(`Hello ${currentUser}! I'm so glad you're here. 😊\n\nI'm your AI Mental Health & Sleep Support Agent. Use the buttons above to get specific support, or chat with me directly below.\n\nHow can I help you today?`);
+        }
+
+        function showCommand(command) {
+            hideInputForms();
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('backBtn').style.display = 'block';
+
+            if (command === 'checkin') {
+                callAPI('/api/checkin', {user_name: currentUser});
+            } else if (command === 'stress') {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('stressForm').style.display = 'block';
+            } else if (command === 'bedtime') {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('bedtimeForm').style.display = 'block';
+            } else if (command === 'mood') {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('moodForm').style.display = 'block';
+            } else if (command === 'affirmations') {
+                callAPI('/api/affirmations', {user_name: currentUser});
+            } else if (command === 'emergency') {
+                callAPI('/api/emergency', {});
+            }
+        }
+
+        function submitStress() {
+            const stressLevel = parseInt(document.getElementById('stressLevel').value);
+            const concern = document.getElementById('stressConcern').value;
+            
+            hideInputForms();
+            document.getElementById('loading').style.display = 'block';
+            
+            callAPI('/api/stress', {
+                user_name: currentUser,
+                stress_level: stressLevel,
+                concern: concern
+            });
+        }
+
+        function submitBedtime() {
+            const sleepConcerns = document.getElementById('sleepConcerns').value;
+            
+            hideInputForms();
+            document.getElementById('loading').style.display = 'block';
+            
+            callAPI('/api/bedtime', {
+                user_name: currentUser,
+                sleep_concerns: sleepConcerns
+            });
+        }
+
+        function submitMood() {
+            const moodRating = parseInt(document.getElementById('moodRating').value);
+            const moodDescription = document.getElementById('moodDescription').value;
+            
+            hideInputForms();
+            document.getElementById('loading').style.display = 'block';
+            
+            callAPI('/api/mood', {
+                user_name: currentUser,
+                mood_rating: moodRating,
+                mood_description: moodDescription
+            });
+        }
+
+        function sendChatMessage() {
+            const message = document.getElementById('chatInput').value.trim();
+            if (!message) return;
+            
+            document.getElementById('chatInput').value = '';
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('backBtn').style.display = 'block';
+            
+            callAPI('/api/chat', {
+                user_name: currentUser,
+                message: message
+            });
+        }
+
+        function callAPI(endpoint, data) {
+            fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('loading').style.display = 'none';
+                showResponse(data.response);
+            })
+            .catch(error => {
+                document.getElementById('loading').style.display = 'none';
+                showResponse('Sorry, I encountered an error. Please try again.');
+                console.error('Error:', error);
+            });
+        }
+
+        function showResponse(response) {
+            document.getElementById('responseArea').style.display = 'block';
+            document.getElementById('responseArea').textContent = response;
+            document.getElementById('responseArea').scrollTop = 0;
+        }
+
+        function hideInputForms() {
+            document.getElementById('stressForm').style.display = 'none';
+            document.getElementById('bedtimeForm').style.display = 'none';
+            document.getElementById('moodForm').style.display = 'none';
+        }
+
+        function showMainMenu() {
+            hideInputForms();
+            document.getElementById('responseArea').style.display = 'none';
+            document.getElementById('backBtn').style.display = 'none';
+            document.getElementById('loading').style.display = 'none';
+            
+            // Clear form inputs
+            document.getElementById('stressLevel').value = 5;
+            document.getElementById('stressConcern').value = '';
+            document.getElementById('sleepConcerns').value = '';
+            document.getElementById('moodRating').value = 5;
+            document.getElementById('moodDescription').value = '';
+        }
+
+        // Enter key support for chat
+        document.getElementById('chatInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendChatMessage();
+            }
+        });
+
+        // Enter key support for name input
+        document.getElementById('userName').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                startSession();
+            }
+        });
+    </script>
+</body>
+</html>
